@@ -689,6 +689,7 @@ dependencies = [
  "dasp",
  "jack",
  "oscen",
+ "rand 0.7.3",
 ]
 
 [[package]]

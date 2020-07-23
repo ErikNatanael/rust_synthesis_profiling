@@ -1,4 +1,5 @@
 use dasp::signal::{Signal};
+use rand::prelude::*;
 
 use std::f64::consts::PI;
 // use std::f32::consts::PI;
@@ -118,20 +119,21 @@ impl Oscillator
     pub fn from_freq(freq: Sample, sample_rate: Sample, wavetable: WavetableIndex, amp: Sample) -> Self {
         Oscillator {
             step: freq / sample_rate,
-            phase: 0.0,
+            phase: random::<f64>(),
             wavetable,
             amp,
         }
     }
     #[inline]
     fn next(&mut self, wavetable_arena: &WavetableArena) -> Sample {
+        let temp_phase = self.phase;
         self.phase += self.step;
         while self.phase >= 1.0 {
             self.phase -= 1.0;
         }
         // Use the phase to index into the wavetable
         match wavetable_arena.get(self.wavetable) {
-            Some(wt) => wt.get(self.phase) * self.amp,
+            Some(wt) => wt.get(temp_phase) * self.amp,
             None => 0.0
         }
     }
