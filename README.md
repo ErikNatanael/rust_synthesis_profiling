@@ -4,11 +4,11 @@ The goal of this repository is to play as many sine waves as possible with as li
 
 ## Method
 
-Play 400 sine waves. Record the "DSP load" meter presented through QjackCtl and whether there are any xruns or not. Did thing improve?
+Play 400 sine waves. Record the "DSP load" meter presented through QjackCtl and whether there are any xruns or not.
 
 JACK settings for the results below: 48kHz, 256 frames/buffer, 3 periods
 
-Comparing exact percentages is probably only possible on the same machine.
+Comparing exact percentages is probably only possible on the same machine and they can vary with what other processes are running at the same time so take them with a pinch of salt.
 
 ## Results so far
 
@@ -38,7 +38,7 @@ After this I decided to focus on the shared_wavetable_synth
 Trying to get the CPU usage of the shared_resources_synth implementation down.
 
 - Changing from f64 to f32 = no improvement
-- Changing from linear interpolation to no interpolations: 34% improvement
+- Changing from linear interpolation of wavetable samples to no interpolations: 34% improvement
 - Changing the size of the wavetable: no improvement
 - Enabling lto in the release profile: slightly worse performance
 - Not `Box`ing the `Oscillator`s: small improvement
