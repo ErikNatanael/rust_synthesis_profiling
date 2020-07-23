@@ -5,9 +5,9 @@ mod shared_wavetable_synth;
 mod dasp_synth;
 mod oscen_synth;
 mod owned_wavetable_synth;
-// use shared_wavetable_synth::{SynthesisEngine, Sample};
+use shared_wavetable_synth::{SynthesisEngine, Sample};
 // use dasp_synth::{SynthesisEngine, Sample};
-use oscen_synth::{SynthesisEngine, Sample};
+// use oscen_synth::{SynthesisEngine, Sample};
 // use owned_wavetable_synth::{SynthesisEngine, Sample};
 
 fn main() {
@@ -51,9 +51,9 @@ fn main() {
 
                 let mut frame = [0.0; 2];
 
-                // let modular_sample = synthesis_engine.next();
-                // frame[0] += modular_sample;
-                // frame[1] += modular_sample;
+                let modular_sample = synthesis_engine.next();
+                frame[0] += modular_sample;
+                frame[1] += modular_sample;
 
                 // Write the sound to the channel buffer
                 *l = frame[0] as f32;

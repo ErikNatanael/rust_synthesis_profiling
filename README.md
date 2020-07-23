@@ -29,7 +29,8 @@ After this I decided to focus on the shared_wavetable_synth
 | baseline (no DSP, only the loop)        |           1.1% (indistinguishable from idle) |
 | DSP, but no copying to the frame buffer |          15.1% |
 | shared_wavetable_synth no interpolation |          17.6% |
-|                                         |                |
+| shared_wavetable_synth no boxing        |          16.5% |
+| shared_wavetable_synth no boxing and no Option around Wavetables   |    17.1% |
 
 
 Trying to get the CPU usage of the shared_resources_synth implementation down.
@@ -38,6 +39,8 @@ Trying to get the CPU usage of the shared_resources_synth implementation down.
 - Changing from linear interpolation to no interpolations: 34% improvement
 - Changing the size of the wavetable: no improvement
 - Enabling lto in the release profile: slightly worse performance
+- Not `Box`ing the `Oscillator`s: small improvement
+- Not putting `Wavetable`s inside an `Option` and matching in `Oscillator`: slightly worse performance (why?)
 
 
 

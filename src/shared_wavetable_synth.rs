@@ -167,14 +167,14 @@ impl WavetableArena {
 
 pub struct SynthesisEngine {
     wavetable_arena: WavetableArena,
-    oscillators: Vec<Box<Oscillator>>,
+    oscillators: Vec<Oscillator>,
 }
 
 impl SynthesisEngine {
     pub fn new(sample_rate: Sample) -> Self {
         let mut wavetable_arena = WavetableArena::new();
         let sine_wt = wavetable_arena.add(Wavetable::sine(131072));
-        let mut oscillators: Vec<Box<Oscillator>> = Vec::new();
+        let mut oscillators: Vec<Oscillator> = Vec::new();
         let num_oscillators = 400;
         let dampening = 1.0 / num_oscillators as Sample;
         // Add a wavetable to the arena
@@ -185,7 +185,7 @@ impl SynthesisEngine {
                 dampening
             );
             oscillators.push(
-                Box::new(sig)
+                sig
             );
         }
 
