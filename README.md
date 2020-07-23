@@ -45,6 +45,8 @@ Trying to get the CPU usage of the shared_resources_synth implementation down.
 - Not putting `Wavetable`s inside an `Option` and matching in `Oscillator`: slightly worse performance (why?)
 - Not using the Phase class and instead handling that in the Oscillator class: 15% improvement
 - Using a while loop to contain the phase within 0<= phase < 1 instead of `% 1.0`: 51% improvement
+- Indexing into the wavetable with an unsafe `get_unchecked`: 9% improvement
+- Replacing the Wavetable buffer Vec with an array or a boxed array: no improvement
 
 ## Calculating phase
 
@@ -105,7 +107,7 @@ amp = 1.0/nOscillators;
 process = sum(i,nOscillators,os.osc(freq) * amp) <: _,_;
 ```
 
-The Faust compiler can transpile this to Rust using jack 0.5.3 with a DSP load of just 2%. How does it manage to be so efficient? The following is the main compute function:
+The Faust compiler can transpile this to Rust using the jack crate version 0.5.3 with a DSP load of just 2%. How does it manage to be so efficient? The following is the main compute function:
 
 ```rust
 pub fn compute(&mut self, count: i32, inputs: &[&[f32]], outputs: &mut[&mut[f32]]) {

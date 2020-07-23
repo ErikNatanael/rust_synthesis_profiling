@@ -13,7 +13,7 @@ use std::f64::consts::PI;
 pub type Sample = f64;
 
 pub struct Wavetable {
-    buffer: Vec<Sample>,
+    buffer: Vec<Sample>, // Box<[Sample; 131072]>,
     // Store the size as an f64 to find fractional indexes without typecasting
     size: Sample,
 }
@@ -29,7 +29,7 @@ impl Wavetable {
         let buffer = vec![0.0; w_size];
         Wavetable {
             buffer,
-            size: wavetable_size as Sample,
+            size: w_size as Sample,
         }
     }
     pub fn sine(wavetable_size: usize) -> Self {
@@ -53,7 +53,9 @@ impl Wavetable {
     /// Get the closest sample with no interpolation
     #[inline]
     fn get(&self, phase: Sample) -> Sample {
-        self.buffer[(self.size * phase) as usize]
+        let index = (self.size * phase) as usize;
+        // self.buffer[index]
+        unsafe{ *self.buffer.get_unchecked(index) }
     }
 }
 
