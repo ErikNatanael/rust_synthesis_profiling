@@ -99,8 +99,8 @@ impl Signal for Phase {
 // Signal. We could put the Wavetable inside the Osciallator, and be unable to share it between oscillators 
 // or modify it. We could also put an Rc<Wavetable> in the Oscillator, but this is not Send unless we're resorting to unsafe.
 pub struct Oscillator {
-
-    phase: Phase,
+    step: Sample,
+    phase: Sample,
     wavetable: WavetableIndex,
     amp: Sample,
 }
@@ -109,23 +109,29 @@ impl Oscillator
 {
     pub fn new(wavetable: WavetableIndex) -> Self {
         Oscillator {
-            phase: Phase::new(),
+            step: 0.0,
+            phase: 0.0,
             wavetable,
             amp: 1.0,
         }
     }
     pub fn from_freq(freq: Sample, sample_rate: Sample, wavetable: WavetableIndex, amp: Sample) -> Self {
         Oscillator {
-            phase: Phase::from_freq(freq, sample_rate),
+            step: freq / sample_rate,
+            phase: 0.0,
             wavetable,
             amp,
         }
     }
     #[inline]
     fn next(&mut self, wavetable_arena: &WavetableArena) -> Sample {
+        self.phase += self.step;
+        while self.phase >= 1.0 {
+            self.phase -= 1.0;
+        }
         // Use the phase to index into the wavetable
         match wavetable_arena.get(self.wavetable) {
-            Some(wt) => wt.get(self.phase.next()) * self.amp,
+            Some(wt) => wt.get(self.phase) * self.amp,
             None => 0.0
         }
     }

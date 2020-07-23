@@ -28,9 +28,11 @@ After this I decided to focus on the shared_wavetable_synth
 |:----------------------------------------|---------------:|
 | baseline (no DSP, only the loop)        |           1.1% (indistinguishable from idle) |
 | DSP, but no copying to the frame buffer |          15.1% |
-| shared_wavetable_synth no interpolation |          17.6% |
-| shared_wavetable_synth no boxing        |          16.5% |
-| shared_wavetable_synth no boxing and no Option around Wavetables   |    17.1% |
+| remove interpolation |          17.6% |
+| remove boxing        |          16.5% |
+| remove boxing and Option around Wavetables   |    17.1% |
+| put the phase inside of Oscillator | 14% |
+| Replace f64 modulo by while loop | 6.8% |
 
 
 Trying to get the CPU usage of the shared_resources_synth implementation down.
@@ -41,6 +43,8 @@ Trying to get the CPU usage of the shared_resources_synth implementation down.
 - Enabling lto in the release profile: slightly worse performance
 - Not `Box`ing the `Oscillator`s: small improvement
 - Not putting `Wavetable`s inside an `Option` and matching in `Oscillator`: slightly worse performance (why?)
+- Not using the Phase class and instead handling that in the Oscillator class: 15% improvement
+- Using a while loop to contain the phase within 0<= phase < 1 instead of `% 1.0`: 51% improvement
 
 
 
