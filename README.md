@@ -16,7 +16,7 @@ Comparing exact percentages is probably only possible on the same machine.
 I tried a few different implementations of playing sine tones:
 
 | Implementation                          |           DSP% |
-|-----------------------------------------+----------------|
+|:----------------------------------------|---------------:|
 | shared_wavetable_synth                  |         27-31% |
 | oscen_synth                             |  runaway xruns/no sound |
 | owned_wavetable_synth                   |            48% |
@@ -24,7 +24,8 @@ I tried a few different implementations of playing sine tones:
 
 After this I decided to focus on the shared_wavetable_synth
 
-|-----------------------------------------+----------------|
+| Implementation | DSP% |
+|:----------------------------------------|---------------:|
 | baseline (no DSP, only the loop)        |           1.1% (indistinguishable from idle) |
 | DSP, but no copying to the frame buffer |          15.1% |
 | shared_wavetable_synth no interpolation |          17.6% |
