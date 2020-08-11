@@ -78,6 +78,16 @@ self.phase = (self.phase + self.step) % 1.0;
 
 Personally, I was surprised that what looks like branching code with a conditional jump was faster than the non-branching versions and that the modulo operator is so very slow (comparably).
 
+Doing some more tests with this I set up 5 different ways of calculating phase: modulo, while loop, modulo with the fold in a variable, while loop with the fold in a variable and the floored sum apprach. In order for the compiler not to optimise the last approach away completely I had to add printing of the phase and calculating the sine of the phase each iteration through the loop. Results for 16777216 iterations (not averaged over a large number of runs, but reasonably stable):
+
+| Implementation | time in seconds | Relative to the fastest |
+|:-- | --: | --: |
+| Modulo | 0.041610325 | 3.32 |
+| While loop | 0.013554583 | 1.08 |
+| Modulo with flexible phase | 0.038719563 | 3.09 |
+| While loop with flexible phase | 0.012548076 | 1.0 |
+| Minus floored sum | 0.102672996 | 8.18 |
+
 
 ## Comparison with SuperCollider
 

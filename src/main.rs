@@ -10,7 +10,85 @@ use shared_wavetable_synth::{SynthesisEngine, Sample};
 // use oscen_synth::{SynthesisEngine, Sample};
 // use owned_wavetable_synth::{SynthesisEngine, Sample};
 
+
+/// Simple Phase struct for benchmarking different approaches to phase calculations in isolation
+struct Phase {
+    phase: f64,
+    step: f64,
+}
+
+impl Phase {
+    pub fn increase_modulo(&mut self) {
+        self.phase = (self.phase + self.step) % 1.0_f64;
+    }
+    pub fn increase_while(&mut self) {
+        self.phase += self.step;
+        while self.phase > 1.0 {
+            self.phase -= 1.0;
+        }
+    }
+    pub fn increase_modulo_flex_fold(&mut self, fold: f64) {
+        self.phase = (self.phase + self.step) % fold;
+    }
+    pub fn increase_while_flex_fold(&mut self, fold: f64) {
+        self.phase += self.step;
+        while self.phase > fold {
+            self.phase -= fold;
+        }
+    }
+    pub fn increase_baked_faust(&mut self) {
+        self.phase = self.phase + self.step - (self.phase + self.step).floor();
+    }
+    pub fn use_phase(&self) -> f64 {
+        self.phase.sin()
+    }
+}
+
 fn main() {
+    // Isolated benchmarks
+    // Phase calculation benchmarks
+    let mut phase = Phase { phase: 0.0, step: 442.0 / 44100.0 };
+    let mut temp = 0.0;
+    use std::time::Instant;
+    let now_modulo = Instant::now();
+    for _ in 0..16777216 {
+        phase.increase_modulo();
+        phase.use_phase();
+    }
+    println!("Modulo phase increase: {:?}", now_modulo.elapsed().as_secs_f64());
+    println!("Phase: {}", phase.phase);
+    let now_while = Instant::now();
+    for _ in 0..16777216 {
+        phase.increase_while();
+        phase.use_phase();
+    }
+    println!("While loop phase increase: {:?}", now_while.elapsed().as_secs_f64());
+    println!("Phase: {}", phase.phase);
+    let now_modulo_fold = Instant::now();
+    for _ in 0..16777216 {
+        phase.increase_modulo_flex_fold(3.14159);
+        phase.use_phase();
+    }
+    println!("Modulo phase increase flexible fold: {:?}", now_modulo_fold.elapsed().as_secs_f64());
+    println!("Phase: {}", phase.phase);
+    let now_while_fold = Instant::now();
+    for _ in 0..16777216 {
+        phase.increase_while_flex_fold(3.14159);
+        phase.use_phase();
+    }
+    println!("While loop phase increase flexible fold: {:?}", now_while_fold.elapsed().as_secs_f64());
+    println!("Phase: {}", phase.phase);
+
+    let now_faust = Instant::now();
+    for _ in 0..16777216 {
+        phase.increase_baked_faust();
+        phase.use_phase();
+    }
+    println!("Faust approach phase increase: {:?}", now_faust.elapsed().as_secs_f64());
+    // This is required for the "faust" approach not to be optimised away so I added it after the other
+    // benchmarks as well for fairness.
+    println!("Phase: {}", phase.phase); 
+
     // 1. open a client
     let (client, _status) =
         jack::Client::new("ftrace_sonifier", jack::ClientOptions::NO_START_SERVER).unwrap();
